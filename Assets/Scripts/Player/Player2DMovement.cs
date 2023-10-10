@@ -1,34 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Player2DMovement : MonoBehaviour
 {
-    public float playerSpeed;
+    [SerializeField]
+    private float playerSpeed;
     private Rigidbody2D rb;
-    private Vector2 playerDirection;
+    private SpriteRenderer sr;
+
+    private Vector2 movementInput;
+    private Vector2 smoothedMovementInput;
+    private Vector2 movementInputSmoothVelocity;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();    
+        rb = GetComponent<Rigidbody2D>();  
+        sr = GetComponentInChildren<SpriteRenderer>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        float directionX = Input.GetAxisRaw("Horizontal");
-        float directionY = Input.GetAxisRaw("Vertical");
+        Movement();
+        Flip();
 
-        playerDirection = new Vector2(directionX, directionY).normalized;
     }
 
-    private void FixedUpdate()
+    private void Movement()
     {
-        rb.velocity = new Vector2(playerDirection.x * playerSpeed, playerDirection.y * playerSpeed);
+        smoothedMovementInput = Vector2.SmoothDamp(smoothedMovementInput, movementInput, ref movementInputSmoothVelocity, 0.1f);
+        rb.velocity = smoothedMovementInput * playerSpeed;
     }
 
-    public void Onmove(InputAction.CallbackContext ctx) => playerDirection = ctx.ReadValue<Vector2>();
+    private void Flip()
+    {
+        if (rb.velocity.x >= 0)
+        {
+            sr.flipX = false;
+        }
+        else
+        {
+            sr.flipX = true;
+        }
+    }
+
+    private void OnMove(InputValue inputValue) 
+    {
+       movementInput =  inputValue.Get<Vector2>();
+    }
+
 }
 
