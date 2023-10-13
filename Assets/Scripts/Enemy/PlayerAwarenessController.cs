@@ -13,7 +13,6 @@ public class PlayerAwarenessController : MonoBehaviour
 
     private void Awake()
     {
-        // Find all player objects in the scene and add them to the list
         var playerObjects = GameObject.FindGameObjectsWithTag("Player");
         foreach (var playerObject in playerObjects)
         {
