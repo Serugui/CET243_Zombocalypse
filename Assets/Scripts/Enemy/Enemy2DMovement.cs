@@ -7,9 +7,14 @@ public class Enemy2DMovement : MonoBehaviour
     
     [SerializeField]
     private float speed;
+    private float changeDirectionCooldown;
+
+    [SerializeField]
+    private float screenBorder;
 
     private Rigidbody2D rb;
     private Transform spriteTransform;
+    private Camera cam;
     private PlayerAwarenessController playerAwarenessController;
     private Vector2 targetDirection;
     private Quaternion spriteInitialRotation; 
@@ -20,6 +25,9 @@ public class Enemy2DMovement : MonoBehaviour
         spriteTransform = transform.GetChild(0); 
         spriteInitialRotation = spriteTransform.rotation; 
         playerAwarenessController = GetComponent<PlayerAwarenessController>();
+        targetDirection = transform.up;
+        cam = Camera.main;
+
     }
 
     void FixedUpdate()
@@ -31,16 +39,27 @@ public class Enemy2DMovement : MonoBehaviour
 
     private void UpdateTargetDirection()
     {
-        if (playerAwarenessController.AwareOfPlayer)
-        {
-            targetDirection = playerAwarenessController.DirectionToPlayer;
-        }
-        else
-        {
-            targetDirection = Vector2.zero;
-        }
+        HandleRandomDirectionChange();
+
+        HandlePlayerTargeting();
+        
+        HandleEnemyOffScreen();
     }
 
+    private void HandleEnemyOffScreen()
+    {
+        Vector2 screenPosition = cam.WorldToScreenPoint(transform.position);
+
+        if ((screenPosition.x < screenBorder && targetDirection.x < 0) || (screenPosition.x > cam.pixelWidth - screenBorder && targetDirection.x > 0))
+        {
+            targetDirection = new Vector2(-targetDirection.x, targetDirection.y);
+        }
+
+        if ((screenPosition.y < screenBorder && targetDirection.y < 0) || (screenPosition.y > cam.pixelHeight - screenBorder && targetDirection.y > 0))
+        {
+            targetDirection = new Vector2(targetDirection.x, -targetDirection.y);
+        }
+    }
     private void Flip()
     {
         if (rb.velocity.x >= 0)
@@ -53,13 +72,29 @@ public class Enemy2DMovement : MonoBehaviour
         }
     }
 
+    private void HandleRandomDirectionChange()
+    {
+        changeDirectionCooldown -= Time.deltaTime;
+
+        if (changeDirectionCooldown <= 0 )
+        {
+            float angleChange = Random.Range(-90f, 90f);
+            Quaternion rotation = Quaternion.AngleAxis(angleChange, transform.forward);
+            targetDirection = rotation * targetDirection;
+
+            changeDirectionCooldown = Random.Range(1f, 5f);
+        }
+    }
+
+    private void HandlePlayerTargeting()
+    {
+        if (playerAwarenessController.AwareOfPlayer)
+        {
+            targetDirection = playerAwarenessController.DirectionToPlayer;
+        }
+    }
     private void ChasePlayer()
     {
-        if (targetDirection == Vector2.zero)
-        {
-            rb.velocity = Vector2.zero;
-        }
-        else
         {
             rb.velocity = targetDirection * speed;
             RotateTowardsTarget(targetDirection);

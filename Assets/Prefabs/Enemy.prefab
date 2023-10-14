@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 514684361537644579}
   - component: {fileID: 8489557176404522498}
   - component: {fileID: 1497358165891574426}
+  - component: {fileID: -4738818946818682954}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -75,7 +76,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 207698ff5a9274b4facd2d6335de3f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
+  speed: 5
+  screenBorder: -30
 --- !u!70 &8489557176404522498
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -126,6 +128,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAwarenessDistance: 5
+--- !u!114 &-4738818946818682954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3575130592063085590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a9784d9ecccc9409887bb3f9671904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 10
 --- !u!1 &8784216576019145463
 GameObject:
   m_ObjectHideFlags: 0

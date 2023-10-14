@@ -13,15 +13,17 @@ public class PlayerAwarenessController : MonoBehaviour
 
     private void Awake()
     {
+        
+    }
+
+    void Update()
+    {
         var playerObjects = GameObject.FindGameObjectsWithTag("Player");
         foreach (var playerObject in playerObjects)
         {
             players.Add(playerObject.transform);
         }
-    }
 
-    void Update()
-    {
         if (players.Count == 0)
         {
             AwareOfPlayer = false;
