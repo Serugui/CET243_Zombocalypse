@@ -17,7 +17,9 @@ public class Enemy2DMovement : MonoBehaviour
     private Camera cam;
     private PlayerAwarenessController playerAwarenessController;
     private Vector2 targetDirection;
-    private Quaternion spriteInitialRotation; 
+    private Quaternion spriteInitialRotation;
+    private bool isTouchingPlayer = false;
+
 
     private void Awake()
     {
@@ -32,9 +34,16 @@ public class Enemy2DMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        UpdateTargetDirection();
-        Flip();
-        ChasePlayer();
+        if (isTouchingPlayer)
+        {
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            UpdateTargetDirection();
+            Flip();
+            ChasePlayer();
+        }
     }
 
     private void UpdateTargetDirection()
@@ -106,6 +115,22 @@ public class Enemy2DMovement : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
         spriteTransform.rotation = spriteInitialRotation; 
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isTouchingPlayer = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isTouchingPlayer = false;
+        }
     }
 
 }
